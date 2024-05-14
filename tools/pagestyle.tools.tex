@@ -1,0 +1,165 @@
+\ProvidesExplFile{pagestyle.tools.tex}{2024/05/14}{v0.0.1}{xxx}
+
+\msg_new:nnn{easytools<pagestyle>}{Pagestyle~already~defined}{The~`#1'~pagestyle~is~already~defined.}
+\msg_new:nnn{easytools<pagestyle>}{Twoside~is~disabled}{Twoside~is~disabled,~please~enable~twoside~option.}
+
+
+
+\clist_map_inline:nn
+{
+    head, head_left, head_center, head_right, 
+    foot, foot_left, foot_center, foot_right,
+    even_head, even_head_left, even_head_center, even_head_right,
+    odd_head, odd_head_left, odd_head_center, odd_head_right, 
+    even_foot, even_foot_left, even_foot_center, even_foot_right,
+    odd_foot, odd_foot_left, odd_foot_center, odd_foot_right,
+}
+{
+    \tl_new:c {l__easytools_pagestyle_#1_tl}
+}
+
+
+\bool_new:N \l__easytools_pagestyle_twoside_bool
+\bool_gset_false:N \l__easytools_pagestyle_twoside_bool
+
+\cs_new:Npn \__easytools_define_pagestyle:nn #1 #2 {
+    \cs_if_exist:cTF {ps@#1} 
+    {
+        \msg_error:nnn{easytools<pagestyle>}{pagestyle~already~defined}{#1}
+    }
+    {
+        \group_begin:
+        \keys_set:nn {easytools/pagestyle}{#2}
+        \exp_args:Ncx\tl_gset:cn {ps@#1} {
+            \__easytools_set_pagestyle_for_head:
+            \__easytools_set_pagestyle_for_foot:
+        }
+        % \tl_show:c {ps@#1}
+        \group_end:
+    }
+}
+
+\NewDocumentCommand{\set}{}{\__easytools_define_pagestyle:nn}
+
+
+\keys_define:nn {easytools/pagestyle} {
+    head.tl_set:N = \l__easytools_pagestyle_head_tl,
+    head left.tl_set:N = \l__easytools_pagestyle_head_left_tl,
+    head center.tl_set:N = \l__easytools_pagestyle_head_center_tl,
+    head right.tl_set:N = \l__easytools_pagestyle_head_right_tl,
+    foot.tl_set:N = \l__easytools_pagestyle_foot_tl,
+    foot left.tl_set:N = \l__easytools_pagestyle_foot_left_tl,
+    foot center.tl_set:N = \l__easytools_pagestyle_foot_center_tl,
+    foot right.tl_set:N = \l__easytools_pagestyle_foot_right_tl,
+    even head.tl_set:N = \l__easytools_pagestyle_even_head_tl,
+    even head left.tl_set:N = \l__easytools_pagestyle_even_head_left_tl,
+    even head center.tl_set:N = \l__easytools_pagestyle_even_head_center_tl,
+    even head right.tl_set:N = \l__easytools_pagestyle_even_head_right_tl, 
+    even foot.tl_set:N = \l__easytools_pagestyle_even_foot_tl,
+    even foot left.tl_set:N = \l__easytools_pagestyle_even_foot_left_tl,
+    even foot center.tl_set:N = \l__easytools_pagestyle_even_foot_center_tl,
+    even foot right.tl_set:N = \l__easytools_pagestyle_even_foot_right_tl, 
+    odd head.tl_set:N = \l__easytools_pagestyle_odd_head_tl,
+    odd head left.tl_set:N = \l__easytools_pagestyle_odd_head_left_tl,
+    odd head center.tl_set:N = \l__easytools_pagestyle_odd_head_center_tl,
+    odd head right.tl_set:N = \l__easytools_pagestyle_odd_head_right_tl, 
+    odd foot.tl_set:N = \l__easytools_pagestyle_odd_foot_tl,
+    odd foot left.tl_set:N = \l__easytools_pagestyle_odd_foot_left_tl,
+    odd foot center.tl_set:N = \l__easytools_pagestyle_odd_foot_center_tl,
+    odd foot right.tl_set:N = \l__easytools_pagestyle_odd_foot_right_tl,
+    twoside.code:n = {
+        \use:c{bool_set_#1:N} \l__easytools_pagestyle_twoside_bool
+        \use:c {@twoside#1} \use:c{@mparswitch#1}
+    },
+    twoside.default:n = true,
+    twoside.initial:n = false
+}
+
+\makeatletter
+\cs_new:Npn \__easytools_set_pagestyle_for_head: {
+    \bool_if:NTF \l__easytools_pagestyle_twoside_bool 
+    {
+        \bool_if:nTF 
+        {
+            \tl_if_empty_p:N \l__easytools_pagestyle_even_head_tl &&
+            \tl_if_empty_p:N \l__easytools_pagestyle_odd_head_tl 
+        }
+        {
+            \exp_args:NNx \tl_set:Nn \@oddhead {
+                \tl_use:N \l__easytools_pagestyle_odd_head_left_tl \hfill 
+                \tl_use:N \l__easytools_pagestyle_odd_head_center_tl \hfill 
+                \tl_use:N \l__easytools_pagestyle_odd_head_right_tl 
+            }
+            \exp_args:NNx \tl_set:Nn \@evenhead {
+                \tl_use:N \l__easytools_pagestyle_even_head_left_tl \hfill 
+                \tl_use:N \l__easytools_pagestyle_even_head_center_tl \hfill 
+                \tl_use:N \l__easytools_pagestyle_even_head_right_tl 
+            }
+        }
+        {
+            \tl_set:NV \@oddhead \l__easytools_pagestyle_odd_head_tl 
+            \tl_set:NV \@evenhead \l__easytools_pagestyle_even_head_tl
+        }
+    }
+    {
+        \tl_if_empty:NTF \l__easytools_pagestyle_head_tl 
+        {
+            \exp_args:NNx \tl_set:Nn \@oddhead 
+            {
+                \tl_use:N \l__easytools_pagestyle_head_left_tl \hfill 
+                \tl_use:N \l__easytools_pagestyle_head_center_tl \hfill
+                \tl_use:N \l__easytools_pagestyle_head_right_tl
+            }
+            \tl_set:NV \@evenhead \@oddhead
+        }
+        {
+            \tl_set:NV \@oddhead \l__easytools_pagestyle_head_tl 
+            \tl_set:NV \@evenhead \@oddhead
+        }
+    }
+}
+
+
+\cs_new:Npn \__easytools_set_pagestyle_for_foot: {
+    \bool_if:NTF \l__easytools_pagestyle_twoside_bool 
+    {
+        \bool_if:nTF 
+        {
+            \tl_if_empty_p:N \l__easytools_pagestyle_even_foot_tl &&
+            \tl_if_empty_p:N \l__easytools_pagestyle_odd_foot_tl 
+        }
+        {
+            \exp_args:NNx \tl_set:Nn \@oddfoot {
+                \tl_use:N \l__easytools_pagestyle_odd_foot_left_tl \hfill 
+                \tl_use:N \l__easytools_pagestyle_odd_foot_center_tl \hfill 
+                \tl_use:N \l__easytools_pagestyle_odd_foot_right_tl 
+            }
+            \exp_args:NNx \tl_set:Nn \@evenfoot {
+                \tl_use:N \l__easytools_pagestyle_even_foot_left_tl \hfill 
+                \tl_use:N \l__easytools_pagestyle_even_foot_center_tl \hfill 
+                \tl_use:N \l__easytools_pagestyle_even_foot_right_tl 
+            }
+        }
+        {
+            \tl_set:NV \@oddfoot \l__easytools_pagestyle_odd_foot_tl 
+            \tl_set:NV \@evenfoot \l__easytools_pagestyle_even_foot_tl
+        }
+    }
+    {
+        \tl_if_empty:NTF \l__easytools_pagestyle_foot_tl 
+        {
+            \exp_args:NNx \tl_set:Nn \@oddfoot 
+            {
+                \tl_use:N \l__easytools_pagestyle_foot_left_tl \hfill 
+                \tl_use:N \l__easytools_pagestyle_foot_center_tl \hfill
+                \tl_use:N \l__easytools_pagestyle_foot_right_tl
+            }
+            \tl_set:NV \@evenfoot \@oddfoot
+        }
+        {
+            \tl_set:NV \@oddfoot \l__easytools_pagestyle_foot_tl 
+            \tl_set:NV \@evenfoot \@oddfoot
+        }
+    }
+}
+\makeatother

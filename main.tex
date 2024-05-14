@@ -1,10 +1,16 @@
 \documentclass{article}
 
+\usepackage[showframe]{geometry}
 
-\input{pagestyle.tools.tex}
+\input{tools/pagestyle.tools.tex}
 
+\usepackage{lipsum}
+
+\set{mm}{head = aaa}
+
+\pagestyle{mm}
 \begin{document}
 
-\csname __easytools_define_pagestyle:nn\endcsname{fancy}{xxx}
-aaa
+\lipsum[1-20]
+
 \end{document}
