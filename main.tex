@@ -2,15 +2,24 @@
 
 \usepackage[showframe]{geometry}
 
-\input{tools/pagestyle.tools.tex}
-
 \usepackage{lipsum}
 
-\set{mm}{head = aaa}
+\usepackage{easytools}
 
-\pagestyle{mm}
+\EasytoolsLoadLibrary{pagestyle}
+
+\DeclarePagestyle[default]{%
+    head left = {aaa}
+}
+
+
+
+
 \begin{document}
+\pagestyle{default}
+\lipsum[1-20]
 
+% \pagestyle{dd}
 \lipsum[1-20]
 
 \end{document}

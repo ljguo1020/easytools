@@ -1,4 +1,15 @@
 \ProvidesExplPackage{easytools}{2024/05/14}{v0.0.1}{xxx}
 
+\cs_new:Npn \__easytools_load_library:n #1 {
+    \clist_map_inline:nn {#1} {
+        \file_if_exist_input:nF {./tools/easytoolslibrary.#1.tex} {
+
+        }
+    }
+}
+
+
+\NewDocumentCommand{\EasytoolsLoadLibrary}{}{\__easytools_load_library:n}
+
 
 
